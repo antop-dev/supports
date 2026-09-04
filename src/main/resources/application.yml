@@ -1,0 +1,109 @@
+spring:
+  application:
+    name: supports
+  # 프로파일은 설정 파일에 박아두지 않는다. 실행할 때 지정한다.
+  #   로컬: ./gradlew bootRun (build.gradle.kts 가 local 을 붙인다)
+  #   배포: java -jar app.jar --spring.profiles.active=prd
+  datasource:
+    url: jdbc:sqlite:${DB_PATH:./data/supports.db}
+    driver-class-name: org.sqlite.JDBC
+    hikari:
+      # SQLite 는 동시 쓰기가 1개만 가능하므로 커넥션 풀을 1로 제한한다.
+      maximum-pool-size: 1
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.community.dialect.SQLiteDialect
+        format_sql: true
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+  messages:
+    basename: messages
+    encoding: UTF-8
+    fallback-to-system-locale: false
+
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 100MB
+
+  thymeleaf:
+    cache: false
+
+  mail:
+    # SMTP 서버. 비어 있으면 메일 발송을 건너뛴다(운영 값은 배포 워크플로가 준다).
+    host: ${MAIL_HOST:}
+    port: ${MAIL_PORT:587}
+    # SMTP 로그인 계정. 비어 있으면 메일 발송을 건너뛴다.
+    # 받는 사람에게 보이는 발신 주소는 app.mail.from 으로 따로 지정할 수 있다.
+    username: ${MAIL_USERNAME:}
+    # Resend 는 고정 문자열 'resend' 가 계정, API 키가 비밀번호다(RESEND.md 참고).
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          # SMTP 인증. TLS 를 지원하지 않는 로컬 더미 SMTP 는 보통 인증도 없으므로 함께 끈다.
+          auth: ${MAIL_AUTH:true}
+          ssl:
+            # TLS 1.2 미만(1.0/1.1, SSLv3)은 쓰지 않는다.
+            protocols: TLSv1.2 TLSv1.3
+            # 서버 인증서의 호스트명까지 검증한다(중간자 공격 차단). 기본값도 true 지만 명시해 둔다.
+            checkserveridentity: true
+        # ssl.enable / starttls.enable / starttls.required 는 여기서 정하지 않는다.
+        # 셋이 어긋나면 평문 발송으로 이어지므로 app.mail.tls 한 값에서 함께 파생시킨다(MailConfig).
+        transport:
+          protocol: smtp
+
+server:
+  servlet:
+    context-path: ${CONTEXT_PATH:/supports}
+    session:
+      cookie:
+        # 스크립트에서 세션 쿠키를 읽지 못하게 한다(XSS 가 나더라도 세션 탈취 차단)
+        http-only: true
+        same-site: lax
+        # HTTPS 로 서비스할 때 COOKIE_SECURE=true 로 켠다
+        secure: ${COOKIE_SECURE:false}
+  port: 20002
+
+app:
+  # 메일·슬랙에 넣을 절대 URL. 비어 있으면 요청을 기준으로 만든다.
+  # 기본값(:)을 반드시 남긴다. 없으면 미설정 시 플레이스홀더 문자열이 그대로 바인딩되어
+  # 메일 링크가 '${BASE_URL}/supports/...' 로 나간다(기동은 성공하므로 눈에 띄지 않는다).
+  base-url: ${BASE_URL:}
+  upload:
+    dir: ${UPLOAD_DIR:./data/uploads}
+    # 파일 1개당 최대 10MB, 최대 10개
+    max-files: 10
+    max-file-size-bytes: 10485760
+  slack:
+    # 의견 접수 알림용 Incoming Webhook. 비어 있으면 알림을 보내지 않는다.
+    webhook-url: ${SLACK_WEBHOOK_URL:}
+  mail:
+    # SMTP 연결 암호화 방식. starttls(587 기본) / ssl(465 암시적 TLS) / none(평문).
+    # none 은 STARTTLS 를 지원하지 않는 로컬 더미 SMTP 전용이다. 운영에서는 쓰지 않는다.
+    tls: ${MAIL_TLS:starttls}
+    # 받는 사람에게 보이는 발신 주소. 비어 있으면 SMTP 계정(spring.mail.username)을 쓴다.
+    # Resend 에서는 인증한 도메인의 주소여야 하고, 반드시 지정해야 한다(RESEND.md 참고).
+    from: ${MAIL_FROM:}
+    from-name: ${MAIL_FROM_NAME:}
+    # 회신 주소. 비어 있으면 발신 주소로 회신된다.
+    reply-to: ${MAIL_REPLY_TO:}
+  captcha:
+    # 자동화 테스트에서만 false 로 끈다. 운영에서는 반드시 true 를 유지한다.
+    enabled: ${APP_CAPTCHA_ENABLED:true}
+    length: 6
+    width: 180
+    height: 60
+
+logging:
+  level:
+    ai.antop.supports: INFO

@@ -1,0 +1,64 @@
+/* 첨부 이미지 미리보기 팝업 — user/admin 양쪽 화면에서 공용으로 쓴다 */
+.file-preview-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    z-index: 1000;
+}
+
+.file-preview-overlay[hidden] {
+    display: none;
+}
+
+.file-preview-card {
+    position: relative;
+    max-width: min(90vw, 1100px);
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.file-preview-img {
+    max-width: 100%;
+    max-height: calc(90vh - 40px);
+    border-radius: 8px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, .5);
+    background: #fff;
+    object-fit: contain;
+}
+
+.file-preview-caption {
+    color: #f2f2f2;
+    font-size: .85rem;
+    text-align: center;
+    word-break: break-all;
+}
+
+.file-preview-close {
+    position: absolute;
+    top: -18px;
+    right: -18px;
+    width: 36px;
+    height: 36px;
+    border-radius: 100px;
+    border: none;
+    background: #fff;
+    color: #1b1b1f;
+    font-size: 1.3rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .4);
+}
+
+.file-preview-close:hover {
+    background: #eee;
+}

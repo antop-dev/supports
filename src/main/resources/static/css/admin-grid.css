@@ -1,0 +1,114 @@
+/*
+ * 관리자 Grid.js 공통 스타일.
+ * 관리자 화면은 다크 테마 고정이므로 mermaid 기본(라이트) 테마를 덮어쓴다.
+ */
+
+/* 그리드 영역이 남은 화면 높이를 모두 채우고, 본문만 내부 스크롤(헤더 고정) */
+.grid-host { display: flex; min-height: 0; }
+.grid-host .gridjs { flex: 1; min-width: 0; width: 100%; display: flex; flex-direction: column; }
+.grid-host .gridjs-wrapper { flex: 1 1 auto; min-height: 0; overflow: auto; box-shadow: none; border-radius: 12px 12px 0 0; }
+.grid-host .gridjs-footer { flex: 0 0 auto; }
+.grid-host th.gridjs-th { position: sticky; top: 0; z-index: 2; }
+
+/* 셀 여백은 Grid.js 기본값의 2/3 (td 12px 24px → 8px 16px, th 14px 24px → 9px 16px) */
+.grid-host td.gridjs-td { padding: 8px 16px; }
+.grid-host th.gridjs-th { padding: 9px 16px; }
+
+/* 다크 테마 */
+.grid-host .gridjs-wrapper,
+.grid-host td.gridjs-td,
+.grid-host .gridjs-footer { background-color: #1f2937; border-color: #374151; color: #e5e7eb; }
+.grid-host th.gridjs-th { background-color: #374151; border-color: #4b5563; color: #d1d5db; }
+.grid-host td.gridjs-td { border-color: #374151; }
+.grid-host .gridjs-td a.gridjs-link { color: #60a5fa; text-decoration: none; font-weight: 500; white-space: nowrap; }
+.grid-host .gridjs-td a.gridjs-link:hover { text-decoration: underline; }
+
+.grid-host .gridjs-footer { border-top: 1px solid #374151; border-radius: 0 0 12px 12px; box-shadow: none; }
+.grid-host .gridjs-pagination,
+.grid-host .gridjs-pagination .gridjs-summary { color: #9ca3af; }
+.grid-host .gridjs-pagination .gridjs-pages button { background-color: #1f2937; color: #e5e7eb; border-color: #374151; }
+.grid-host .gridjs-pagination .gridjs-pages button:hover:not(:disabled) { background-color: #374151; }
+.grid-host .gridjs-pagination .gridjs-pages button:disabled,
+.grid-host .gridjs-pagination .gridjs-pages button[disabled] { background-color: #111827; color: #4b5563; }
+.grid-host .gridjs-pagination .gridjs-pages button.gridjs-currentPage { background-color: #2563eb; color: #fff; border-color: #2563eb; font-weight: 600; }
+
+/* 상태 뱃지 */
+.gj-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 9999px; font-size: 11px; }
+.gj-badge.gj-done { background: #064e3b; color: #6ee7b7; }
+.gj-badge.gj-on { background: #1e3a8a; color: #93c5fd; }
+.gj-badge.gj-off { background: #374151; color: #9ca3af; }
+.gj-badge.gj-lock { background: #422006; color: #fcd34d; }
+/* 접수(대기) 상태와 이메일은 배경 없이 테두리만 있는 같은 모양 */
+/* 긴 이메일은 라벨 안에서 말줄임 처리한다(전체 값은 툴팁으로 보여준다) */
+.gj-badge.gj-recv,
+.gj-badge.gj-email { background: transparent; color: #9ca3af; border: 1px solid #374151; }
+.gj-badge.gj-email { max-width: 240px; }
+.gj-mailto { color: inherit; text-decoration: none; display: inline-flex; }
+.gj-mailto:hover { color: #60a5fa; }
+.gj-badge > i { flex: 0 0 auto; }
+.gj-badge > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* 의견 목록: 접수번호(1)·보기(2) 열은 가운데 정렬 */
+.feedback-grid th.gridjs-th:nth-child(1),
+.feedback-grid td.gridjs-td:nth-child(1),
+.feedback-grid th.gridjs-th:nth-child(2),
+.feedback-grid td.gridjs-td:nth-child(2) { text-align: center; }
+
+/* 보기·등록일시 열: 좁은 폭 안에서 한 줄로 들어가도록 좌우 여백을 더 줄인다 */
+.feedback-grid th.gridjs-th:nth-child(2),
+.feedback-grid td.gridjs-td:nth-child(2),
+.feedback-grid th.gridjs-th:last-child,
+.feedback-grid td.gridjs-td:last-child { padding-left: 8px; padding-right: 8px; }
+.gj-date { white-space: nowrap; font-size: 13px; color: #9ca3af; }
+
+/* 상세 보기 버튼 */
+.gj-view-btn {
+    display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;
+    padding: 4px 10px; border-radius: 6px; font-size: 12px;
+    color: #93c5fd; background: transparent; border: 1px solid #4b5563; cursor: pointer;
+}
+.gj-view-btn:hover { background: #1e3a8a; color: #dbeafe; border-color: #2563eb; }
+
+/* 의견 열: 제목(첫 줄) + 태그(둘째 줄) */
+.gj-title { font-weight: 500; color: #e5e7eb; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gj-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; }
+
+/* 셀 단위 인라인 수정 */
+.gj-edit { display: block; min-height: 20px; cursor: pointer; border-radius: 4px; padding: 2px 4px; margin: -2px -4px; }
+.gj-edit:hover { background-color: #4b5563; outline: 1px dashed #6b7280; }
+.gj-edit-input {
+    width: 100%;
+    box-sizing: border-box;
+    background: #111827;
+    color: #e5e7eb;
+    border: 1px solid #3b82f6;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 13px;
+}
+.gj-saving { opacity: .5; }
+
+/* URL 셀: 링크 표시 + 값 없을 때 대시 */
+.gj-link { color: #60a5fa; text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; max-width: 100%; vertical-align: bottom; }
+.gj-link:hover { text-decoration: underline; }
+.gj-muted { color: #6b7280; }
+
+/* 행 안의 아이콘 버튼 */
+.gj-icon-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 10px; border-radius: 6px; font-size: 12px;
+    color: #fca5a5; background: transparent; border: 1px solid #4b5563; cursor: pointer;
+}
+.gj-icon-btn:hover { background: #7f1d1d; color: #fee2e2; border-color: #b91c1c; }
+.gj-icon-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+/* 토스트 */
+.gj-toast {
+    position: fixed; left: 50%; bottom: 32px; transform: translateX(-50%);
+    background: #111827; color: #e5e7eb; border: 1px solid #374151;
+    padding: 10px 18px; border-radius: 8px; font-size: 13px; z-index: 100;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .4);
+    opacity: 0; transition: opacity .2s;
+}
+.gj-toast.show { opacity: 1; }
+.gj-toast.error { border-color: #b91c1c; color: #fecaca; }

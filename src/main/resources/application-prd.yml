@@ -1,0 +1,15 @@
+spring:
+  thymeleaf:
+    cache: true
+
+# 관리자 계정은 admin_users 테이블에 직접 넣는다(설정으로 만들지 않는다).
+# 운영에서는 반드시 아래 환경 변수를 설정한다.
+#   MAIL_USERNAME (SMTP 로그인 계정. Resend 는 고정 문자열 resend)
+#   MAIL_PASSWORD (Resend API 키, RESEND.md 참고)
+#   MAIL_FROM / MAIL_FROM_NAME / MAIL_REPLY_TO (표시용 발신 주소, 선택)
+#   MAIL_TLS 는 설정하지 않는다(기본 starttls). none 으로 두면 평문으로 발송된다.
+#   BASE_URL (예: https://example.com), CONTEXT_PATH
+#   SLACK_WEBHOOK_URL (의견 접수 알림, 선택)
+logging:
+  level:
+    ai.antop.supports: INFO

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head th:replace="~{fragments/user :: head(#{error.500.title})}"></head>
+<body>
+<header th:replace="~{fragments/user :: appbar('')}"></header>
+<main class="container">
+    <div class="card" style="text-align:center;">
+        <span class="material-symbols-outlined" style="font-size:3rem;color:var(--md-error);">error</span>
+        <h1 class="headline" th:text="#{error.500.title}">오류</h1>
+        <p class="subtitle" th:text="#{error.500.message}">잠시 후 다시 시도하세요</p>
+        <div class="actions" style="justify-content:center;">
+            <a th:href="@{/feedbacks/new}" class="btn btn-tonal" th:text="#{error.home}">처음으로</a>
+        </div>
+    </div>
+</main>
+<div th:replace="~{fragments/user :: scripts}"></div>
+</body>
+</html>

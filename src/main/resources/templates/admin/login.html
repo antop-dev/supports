@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head th:replace="~{fragments/admin :: head('관리자 로그인')}"></head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+
+<div class="min-h-screen flex items-center justify-center px-4">
+    <div class="w-full max-w-sm bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 border border-gray-100 dark:border-gray-700">
+        <h1 class="text-xl font-semibold mb-6 flex items-center gap-2">
+            <i class="fa-solid fa-user-shield"></i>
+            <span>관리자 로그인</span>
+        </h1>
+
+        <!-- 비밀번호 변경 후 로그아웃되어 돌아온 경우 -->
+        <div th:if="${param.passwordChanged}"
+             class="mb-4 p-3 rounded-lg bg-green-50 text-green-700 text-sm dark:bg-green-900/40 dark:text-green-300">비밀번호가 변경되었습니다. 새 비밀번호로 다시 로그인하세요.</div>
+
+        <!-- 항목에 매이지 않는 오류(로그인 실패 등). 서버 응답을 받아 채운다. -->
+        <div id="login-error" role="alert"
+             class="hidden mb-4 p-3 rounded-lg bg-red-50 text-red-700 text-sm dark:bg-red-900/40 dark:text-red-300"></div>
+
+        <!-- 로그인은 페이지 이동 없이 AJAX 로 처리한다. -->
+        <form id="loginForm" method="post" novalidate class="space-y-4"
+              data-error-text="로그인 처리 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요."
+              th:attr="data-url=@{/admin/login},data-success-url=@{/admin/feedbacks}">
+            <div>
+                <label for="login-username" class="block text-sm font-medium mb-1">아이디</label>
+                <input type="text" id="login-username" name="username" autocomplete="username" autofocus
+                       class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 px-3 py-2 text-sm">
+                <p class="hidden text-red-600 text-xs mt-1" data-error-for="username"></p>
+            </div>
+            <div>
+                <label for="login-password" class="block text-sm font-medium mb-1">비밀번호</label>
+                <input type="password" id="login-password" name="password" autocomplete="current-password"
+                       class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 px-3 py-2 text-sm">
+                <p class="hidden text-red-600 text-xs mt-1" data-error-for="password"></p>
+            </div>
+            <div>
+                <label for="login-captcha" class="block text-sm font-medium mb-1">자동입력 방지</label>
+                <div class="flex items-stretch gap-2">
+                    <img th:src="@{/captcha}" id="captchaImg" alt="captcha" title="새로고침" data-captcha-reload
+                         class="self-stretch w-28 h-auto object-contain rounded border border-gray-300 bg-white cursor-pointer">
+                    <input type="text" id="login-captcha" name="captcha" inputmode="numeric" maxlength="6" autocomplete="off"
+                           placeholder="이미지의 숫자 6자리"
+                           class="flex-1 min-w-0 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 px-3 py-2 text-sm">
+                </div>
+                <p class="hidden text-red-600 text-xs mt-1" data-error-for="captcha"></p>
+            </div>
+            <!-- 로그인 중에는 비활성 + 스피너로 바뀌어 두 번 눌리지 않는다. -->
+            <button type="submit" id="login-submit"
+                    data-idle-text="로그인" data-busy-text="로그인 중..."
+                    class="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-lg py-2.5 text-sm font-medium flex items-center justify-center gap-2">
+                <i id="login-submit-icon" class="fa-solid fa-right-to-bracket"></i>
+                <span id="login-submit-text">로그인</span>
+            </button>
+        </form>
+    </div>
+</div>
+
+<div th:replace="~{fragments/admin :: scripts}"></div>
+<script th:src="@{/js/admin-login.js}"></script>
+</body>
+</html>

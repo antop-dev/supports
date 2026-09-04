@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head th:replace="~{fragments/user :: head(#{feedback.new.title})}"></head>
+<body>
+<header th:replace="~{fragments/user :: appbar('new')}"></header>
+
+<main class="container">
+    <div class="card">
+        <h1 class="headline" th:text="#{feedback.new.title}">의견 등록</h1>
+        <p class="subtitle" th:text="#{app.subtitle}">소중한 의견을 남겨주세요</p>
+
+        <!-- 전역(폼 전체) 오류 -->
+        <div class="form-alert" data-global-errors hidden></div>
+
+        <form id="feedbackForm" th:action="@{/feedbacks}" th:object="${form}" method="post"
+              enctype="multipart/form-data" novalidate>
+
+            <!-- 프로젝트 -->
+            <div class="field" data-field="projectId">
+                <label><span th:text="#{feedback.field.project}">프로젝트</span> <span class="req">*</span></label>
+                <input type="hidden" th:field="*{projectId}" id="projectId">
+                <div class="project-trigger-wrap" id="projectTriggerWrap">
+                    <span class="material-symbols-outlined project-trigger-icon">search</span>
+                    <input type="text" id="projectTrigger" class="project-trigger" readonly
+                           th:value="#{feedback.field.project.placeholder}">
+                </div>
+                <div class="error-text" data-error></div>
+
+                <!-- 선택 팝업이 읽어갈 원본 프로젝트 목록(화면에 보이지 않음) -->
+                <template id="projectSource">
+                    <span th:each="p : ${projects}"
+                          th:attr="data-id=${p.id},data-name=${p.name},data-url=${p.url}"></span>
+                </template>
+            </div>
+
+            <!-- 제목 -->
+            <div class="field" data-field="title">
+                <label><span th:text="#{feedback.field.title}">제목</span> <span class="req">*</span></label>
+                <input type="text" th:field="*{title}" maxlength="200">
+                <div class="error-text" data-error></div>
+            </div>
+
+            <!-- 이메일 -->
+            <div class="field" data-field="email">
+                <label>
+                    <span th:text="#{feedback.field.email}">이메일</span>
+                    <span class="optional" th:text="|(#{common.optional})|">(선택)</span>
+                </label>
+                <input type="email" th:field="*{email}" autocomplete="email">
+                <div class="error-text" data-error></div>
+                <!-- 이메일을 적지 않고 체크만 한 경우는 서버에서 수신 안 함으로 저장한다. -->
+                <label class="check-row">
+                    <input type="checkbox" th:field="*{emailReply}" data-email-reply>
+                    <span th:text="#{feedback.field.email.reply}">처리 결과를 이메일로 받겠습니다</span>
+                </label>
+            </div>
+
+            <!-- 내용 (WYSIWYG) -->
+            <div class="field" data-field="content">
+                <label><span th:text="#{feedback.field.content}">내용</span> <span class="req">*</span></label>
+                <input type="hidden" th:field="*{content}">
+                <div class="editor-wrap">
+                    <div data-editor="content" data-target="#content"></div>
+                </div>
+                <div class="error-text" data-error></div>
+            </div>
+
+            <!-- 파일 첨부 -->
+            <div class="field" data-field="files">
+                <label>
+                    <span th:text="#{feedback.field.files}">파일 첨부</span>
+                    <span class="optional" th:text="|(#{common.optional})|">(선택)</span>
+                </label>
+                <!-- FilePond 초기화 전에도 같은 크기/모양이 보이도록 감싸둔다 -->
+                <div class="filepond-wrap">
+                    <input type="file" name="files" multiple data-filepond
+                           th:attr="data-max-files=${maxFiles},data-max-file-size=${maxFileSizeBytes},data-upload-url=@{/feedbacks/uploads}">
+                </div>
+                <div class="help"
+                     th:text="#{feedback.field.files.help(${maxFiles},${maxFileSizeBytes / (1024*1024)})}">
+                    여러 개 첨부 가능
+                </div>
+                <div class="error-text" data-error></div>
+            </div>
+
+            <!-- 비밀번호 -->
+            <div class="field" data-field="password">
+                <label>
+                    <span th:text="#{feedback.field.password}">비밀번호</span>
+                    <span class="optional" th:text="|(#{common.optional})|">(선택)</span>
+                </label>
+                <input type="password" th:field="*{password}" autocomplete="new-password">
+                <div class="help" th:text="#{feedback.field.password.help}">미입력 시 공개</div>
+            </div>
+
+            <!-- 캡차 -->
+            <div class="field" data-field="captcha">
+                <label><span th:text="#{captcha.label}">자동입력 방지</span> <span class="req">*</span></label>
+                <div class="captcha-row">
+                    <img th:src="@{/captcha}" id="captchaImg" alt="captcha" th:title="#{captcha.reload}"
+                         style="cursor:pointer;" data-captcha-reload>
+                    <input type="text" th:field="*{captcha}" inputmode="numeric" maxlength="6"
+                           th:placeholder="#{captcha.placeholder}" autocomplete="off">
+                </div>
+                <div class="error-text" data-error></div>
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="btn btn-filled btn-block">
+                    <span class="material-symbols-outlined">send</span>
+                    <span th:text="#{feedback.submit}">등록하기</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<!-- 프로젝트 선택 팝업 -->
+<div id="projectModal" class="modal-overlay" hidden>
+    <div class="modal-card">
+        <div class="modal-header">
+            <span th:text="#{feedback.field.project.modalTitle}">프로젝트 선택</span>
+            <button type="button" class="btn-icon" id="projectModalClose">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <input type="text" id="projectModalSearch" class="modal-search"
+               th:placeholder="#{feedback.field.project.searchPlaceholder}" autocomplete="off">
+        <ul class="project-list" id="projectModalList" th:attr="data-empty=#{feedback.field.project.empty}"></ul>
+    </div>
+</div>
+
+<div th:replace="~{fragments/user :: scripts}"></div>
+<div th:replace="~{fragments/user :: form-scripts}"></div>
+<script th:src="@{/js/captcha.js}"></script>
+<script th:src="@{/js/project-picker.js}"></script>
+<script th:src="@{/js/feedback-form.js}"></script>
+</body>
+</html>

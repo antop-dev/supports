@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head th:fragment="head(pageTitle)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- CSRF 토큰. 일반 폼은 히든 필드로, fetch/XHR 는 csrf.js 를 통해 헤더로 보낸다. -->
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <title th:text="|${pageTitle} · #{app.title}|">의견 접수</title>
+    <!-- 테마 조기 적용(깜빡임 방지) -->
+    <script th:src="@{/js/theme.js}"></script>
+    <!-- 아이콘 폰트는 첫 화면에 바로 필요하므로 미리 받는다(폰트는 same-origin 이라도 crossorigin 필수) -->
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+          th:href="@{/vendor/fonts/files/material-symbols-outlined.woff2}">
+    <link rel="stylesheet" th:href="@{/vendor/fonts/fonts.css}">
+    <link rel="stylesheet" th:href="@{/vendor/quill/quill.snow.css}">
+    <link rel="stylesheet" th:href="@{/vendor/filepond/filepond.min.css}">
+    <link rel="stylesheet" th:href="@{/css/user.css}">
+    <link rel="stylesheet" th:href="@{/css/file-preview.css}">
+</head>
+<body>
+
+<header th:fragment="appbar(active)" class="app-bar">
+    <div class="app-bar-inner">
+        <nav class="app-tabs">
+            <a th:href="@{/feedbacks/new}" class="app-tab" th:classappend="${active == 'new'} ? 'active'">
+                <span class="material-symbols-outlined">edit_note</span>
+                <span th:text="#{app.title}">의견 접수</span>
+            </a>
+            <a th:href="@{/feedbacks/lookup}" class="app-tab" th:classappend="${active == 'lookup'} ? 'active'">
+                <span class="material-symbols-outlined">search</span>
+                <span th:text="#{lookup.title}">접수 확인</span>
+            </a>
+        </nav>
+        <span class="spacer"></span>
+        <button type="button" class="btn-icon" data-theme-toggle th:title="#{theme.toggle}">
+            <span class="material-symbols-outlined" data-theme-icon>dark_mode</span>
+        </button>
+    </div>
+</header>
+
+<div th:fragment="scripts">
+    <script th:src="@{/js/csrf.js}"></script>
+    <script th:src="@{/js/localtime.js}"></script>
+    <script th:src="@{/js/file-preview.js}"></script>
+</div>
+
+<!-- 에디터/파일 업로드는 등록 폼에서만 필요하다(다른 페이지까지 300KB 넘게 받지 않도록 분리) -->
+<div th:fragment="form-scripts">
+    <script th:src="@{/vendor/quill/quill.js}"></script>
+    <script th:src="@{/js/quill-init.js}"></script>
+    <script th:src="@{/vendor/filepond/filepond.min.js}"></script>
+    <script th:src="@{/js/filepond-init.js}"></script>
+</div>
+
+</body>
+</html>

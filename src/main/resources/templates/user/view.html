@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head th:replace="~{fragments/user :: head(#{feedback.view.title})}"></head>
+<body>
+<header th:replace="~{fragments/user :: appbar('lookup')}"></header>
+
+<main class="container">
+    <div class="card">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span class="chip" th:classappend="${feedback.done} ? 'chip-done' : 'chip-received'">
+                <span class="material-symbols-outlined" style="font-size:1rem;"
+                      th:text="${feedback.done} ? 'task_alt' : 'schedule'">schedule</span>
+                <span th:text="#{'status.' + ${feedback.status}}">상태</span>
+            </span>
+            <span class="chip chip-received" style="font-family:monospace;" th:text="${feedback.receiptNo}">R-XXXX</span>
+        </div>
+
+        <h1 class="headline" style="margin-top:12px;" th:text="${feedback.title}">제목</h1>
+
+        <div class="meta">
+            <span><span th:text="#{common.project}">프로젝트</span>: <strong th:text="${feedback.projectName}">P</strong></span>
+            <span>
+                <span th:text="#{common.createdAt}">등록일</span>:
+                <time class="localtime" th:datetime="${feedback.createdAt}"
+                      th:text="${@dateTimes.format(feedback.createdAt)}">-</time>
+            </span>
+        </div>
+
+        <hr class="divider">
+        <div class="content-body" th:utext="${feedback.content}">내용</div>
+
+        <!-- 첨부 파일 -->
+        <div th:if="${!feedback.files.isEmpty()}">
+            <hr class="divider">
+            <h2 style="font-size:1.05rem;font-weight:500;" th:text="#{feedback.view.attachments}">첨부 파일</h2>
+            <div class="link-list" style="display:flex;flex-direction:column;gap:8px;">
+                <a th:each="f : ${feedback.files}"
+                   th:href="@{/feedbacks/{id}/files/{fid}(id=${feedback.id},fid=${f.id})}"
+                   th:target="${f.pdf} ? '_blank'"
+                   th:attr="data-preview=${f.image} ? 'image' : null">
+                    <span class="material-symbols-outlined"
+                          th:text="${f.image} ? 'image' : (${f.pdf} ? 'picture_as_pdf' : 'attach_file')">attach_file</span>
+                    <span th:text="${f.originalName}">file</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- 처리 내용 -->
+        <hr class="divider">
+        <h2 style="font-size:1.05rem;font-weight:500;display:flex;align-items:center;gap:8px;">
+            <span class="material-symbols-outlined">support_agent</span>
+            <span th:text="#{feedback.view.reply}">처리 내용</span>
+        </h2>
+        <div th:if="${feedback.replyContent != null}">
+            <div class="content-body" th:utext="${feedback.replyContent}">답변</div>
+            <div class="meta" th:if="${feedback.processedAt != null}">
+                <span>
+                    <span th:text="#{common.processedAt}">처리일시</span>:
+                    <time class="localtime" th:datetime="${feedback.processedAt}"
+                          th:text="${@dateTimes.format(feedback.processedAt)}">-</time>
+                </span>
+            </div>
+        </div>
+        <p th:if="${feedback.replyContent == null}" class="subtitle" th:text="#{feedback.view.noReply}">아직 처리되지 않음</p>
+
+        <div class="actions" style="margin-top:16px;">
+            <a class="btn btn-tonal btn-block" th:href="@{/feedbacks/lookup}">
+                <span class="material-symbols-outlined">search</span>
+                <span th:text="#{lookup.title}">접수 확인</span>
+            </a>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/user :: scripts}"></div>
+</body>
+</html>

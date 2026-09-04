@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head th:replace="~{fragments/user :: head(#{feedback.complete.title})}"></head>
+<body>
+<header th:replace="~{fragments/user :: appbar('new')}"></header>
+
+<main class="container">
+    <div class="card">
+        <h1 class="headline" style="display:flex;align-items:center;gap:8px;">
+            <span class="material-symbols-outlined" style="color:var(--md-success);font-size:2rem;">check_circle</span>
+            <span th:text="#{feedback.complete.title}">접수되었습니다</span>
+        </h1>
+        <p class="subtitle" th:text="#{feedback.complete.guide}">접수번호로 다시 확인하세요</p>
+
+        <!-- 접수번호 + 복사 아이콘 -->
+        <div class="receipt-box">
+            <div th:text="#{feedback.complete.receiptNo}">접수번호</div>
+            <div class="receipt-no-row">
+                <span class="receipt-no" id="receiptNo" th:text="${feedback.receiptNo}">R-XXXX</span>
+                <button type="button" class="btn-icon copy-btn" data-copy-target="#receiptNo"
+                        th:title="#{feedback.complete.copyNo}"
+                        th:attr="data-copied=#{feedback.complete.copied}">
+                    <span class="material-symbols-outlined">content_copy</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 링크 복사 / 후원 -->
+        <div class="icon-actions">
+            <button type="button" class="fab" data-copy-text
+                    th:attr="data-copy-text=${viewUrl},data-copied=#{feedback.complete.copied}"
+                    th:title="#{feedback.complete.copyLink}">
+                <span class="material-symbols-outlined">link</span>
+            </button>
+            <a class="fab" href="https://ko-fi.com/antop?hidefeed=true&amp;widget=true" target="_blank" rel="noopener"
+               th:title="#{support.title}">
+                <span class="material-symbols-outlined">favorite</span>
+            </a>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/user :: scripts}"></div>
+<script th:src="@{/js/copy.js}"></script>
+</body>
+</html>

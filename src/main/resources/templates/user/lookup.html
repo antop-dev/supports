@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head th:replace="~{fragments/user :: head(#{lookup.title})}"></head>
+<body>
+<header th:replace="~{fragments/user :: appbar('lookup')}"></header>
+
+<main class="container">
+    <div class="card">
+        <h1 class="headline" style="display:flex;align-items:center;gap:8px;">
+            <span class="material-symbols-outlined">search</span>
+            <span th:text="#{lookup.title}">접수 확인</span>
+        </h1>
+        <p class="subtitle" th:text="#{lookup.guide}">접수번호로 등록하신 의견을 확인합니다.</p>
+
+        <form id="lookupForm" th:action="@{/feedbacks/lookup}" method="post">
+            <div class="field" data-field="receiptNo">
+                <label><span th:text="#{feedback.complete.receiptNo}">접수번호</span> <span class="req">*</span></label>
+                <input type="text" name="receiptNo"
+                       th:placeholder="#{lookup.placeholder}" autocomplete="off" autofocus required>
+                <div class="error-text" data-error></div>
+            </div>
+            <div class="actions">
+                <button type="submit" class="btn btn-filled btn-block">
+                    <span class="material-symbols-outlined">search</span>
+                    <span th:text="#{lookup.submit}">검색</span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+        <h2 style="font-size:1.05rem;font-weight:500;" th:text="#{lookup.recent.title}">최근 등록된 의견</h2>
+
+        <div class="recent-list" th:if="${!recentFeedbacks.isEmpty()}">
+            <a class="recent-item" th:each="item : ${recentFeedbacks}"
+               th:href="@{/feedbacks/{id}(id=${item.id})}">
+                <span class="recent-title" th:text="${item.title}">제목</span>
+                <span class="chip recent-status" th:classappend="${item.done} ? 'chip-done' : 'chip-received'">
+                    <span class="material-symbols-outlined" style="font-size:1rem;"
+                          th:text="${item.done} ? 'task_alt' : 'schedule'">schedule</span>
+                    <span th:text="#{'status.' + ${item.status}}">상태</span>
+                </span>
+                <span class="recent-meta">
+                    <span class="recent-receipt" th:text="${item.receiptNo}">R-XXXX</span>
+                    <time class="localtime" th:datetime="${item.createdAt}"
+                          th:text="${@dateTimes.format(item.createdAt)}">-</time>
+                </span>
+            </a>
+        </div>
+        <p th:if="${recentFeedbacks.isEmpty()}" class="subtitle" th:text="#{lookup.recent.empty}">아직 등록된 의견이 없습니다.</p>
+    </div>
+</main>
+
+<div th:replace="~{fragments/user :: scripts}"></div>
+<script th:src="@{/js/lookup.js}"></script>
+</body>
+</html>

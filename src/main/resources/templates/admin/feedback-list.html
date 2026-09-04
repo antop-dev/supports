@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head th:replace="~{fragments/admin :: head('의견 목록')}"></head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 h-screen flex flex-col overflow-x-auto overflow-y-hidden">
+<nav th:replace="~{fragments/admin :: navbar('feedbacks')}"></nav>
+
+<main class="flex-1 min-h-0 w-full max-w-[1200px] mx-auto px-4 py-4 flex flex-col gap-3">
+    <!-- 툴바: 왼쪽 검색 입력 / 오른쪽 검색·초기화 버튼 -->
+    <form id="searchForm" class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+            <input type="text" id="q-receiptNo" placeholder="접수번호"
+                   class="w-32 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm">
+            <input type="text" id="q-title" placeholder="제목"
+                   class="w-36 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm">
+            <input type="text" id="q-email" placeholder="이메일"
+                   class="w-36 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm">
+            <select id="q-status"
+                    class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-2 py-2 text-sm">
+                <option value="">처리 상태</option>
+                <option value="RECEIVED">접수됨</option>
+                <option value="DONE">처리완료</option>
+            </select>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <button type="submit"
+                    class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium flex items-center gap-2">
+                <i class="fa-solid fa-magnifying-glass"></i><span>검색</span>
+            </button>
+            <button type="reset" id="resetBtn"
+                    class="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    title="검색 조건 초기화">
+                <i class="fa-solid fa-rotate-left"></i>
+            </button>
+        </div>
+    </form>
+
+    <!-- Grid.js 영역: 남은 높이를 모두 채우고 내부 스크롤 -->
+    <!-- data-open-id: 상세 주소로 직접 들어온 경우 그 팝업을 자동으로 연다 -->
+    <div id="grid" class="grid-host feedback-grid flex-1 min-h-0"
+         th:attr="data-url=@{/admin/feedbacks/data},data-detail=@{/admin/feedbacks},data-open-id=${openId}"></div>
+</main>
+
+<!-- 의견 상세 레이어 팝업. 내용은 /admin/feedbacks/{id}/detail 에서 받아 채운다. -->
+<div id="detailModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
+    <div id="detailPanel"
+         class="w-[900px] max-h-[85vh] rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xl flex flex-col overflow-hidden">
+    </div>
+</div>
+
+<div th:replace="~{fragments/admin :: scripts}"></div>
+<div th:replace="~{fragments/admin :: grid-scripts}"></div>
+<script th:src="@{/js/admin-feedback-grid.js}"></script>
+</body>
+</html>

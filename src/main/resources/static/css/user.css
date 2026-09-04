@@ -1,0 +1,808 @@
+/* Material Design 3 스타일 (사용자 페이지) */
+:root {
+    color-scheme: light;
+    --md-primary: #4a5cc4;
+    --md-on-primary: #ffffff;
+    --md-primary-container: #dee0ff;
+    --md-on-primary-container: #00105c;
+    --md-surface: #fbf8fd;
+    --md-surface-container: #f0edf4;
+    --md-surface-container-high: #eae7ef;
+    --md-on-surface: #1b1b1f;
+    --md-on-surface-variant: #46464f;
+    --md-outline: #777680;
+    --md-outline-variant: #c7c5d0;
+    --md-error: #ba1a1a;
+    --md-on-error: #ffffff;
+    --md-success: #2e7d32;
+    --md-radius: 16px;
+    --md-radius-sm: 10px;
+    --md-shadow: 0 1px 3px rgba(0, 0, 0, .12), 0 1px 2px rgba(0, 0, 0, .08);
+}
+
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --md-primary: #bcc2ff;
+    --md-on-primary: #172778;
+    --md-primary-container: #313f91;
+    --md-on-primary-container: #dee0ff;
+    --md-surface: #131316;
+    --md-surface-container: #1f1f23;
+    --md-surface-container-high: #29282d;
+    --md-on-surface: #e5e1e6;
+    --md-on-surface-variant: #c7c5d0;
+    --md-outline: #918f9a;
+    --md-outline-variant: #46464f;
+    --md-error: #ffb4ab;
+    --md-on-error: #690005;
+    --md-success: #7fd48b;
+    --md-shadow: 0 1px 3px rgba(0, 0, 0, .5), 0 1px 2px rgba(0, 0, 0, .4);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        color-scheme: dark;
+        --md-primary: #bcc2ff;
+        --md-on-primary: #172778;
+        --md-primary-container: #313f91;
+        --md-on-primary-container: #dee0ff;
+        --md-surface: #131316;
+        --md-surface-container: #1f1f23;
+        --md-surface-container-high: #29282d;
+        --md-on-surface: #e5e1e6;
+        --md-on-surface-variant: #c7c5d0;
+        --md-outline: #918f9a;
+        --md-outline-variant: #46464f;
+        --md-error: #ffb4ab;
+        --md-on-error: #690005;
+        --md-success: #7fd48b;
+        --md-shadow: 0 1px 3px rgba(0, 0, 0, .5), 0 1px 2px rgba(0, 0, 0, .4);
+    }
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Roboto", system-ui, -apple-system, "Segoe UI", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+    background: var(--md-surface);
+    color: var(--md-on-surface);
+    line-height: 1.6;
+}
+
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
+}
+
+/* 상단 앱 바 — 배경은 전체 폭, 내부 콘텐츠는 본문 폭(720px)에 정렬 */
+.app-bar {
+    background: var(--md-surface-container);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.app-bar-inner {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 16px;
+}
+
+.app-bar .spacer {
+    flex: 1;
+}
+
+/* 탭 */
+.app-tabs {
+    display: flex;
+    gap: 4px;
+}
+
+.app-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 14px 12px;
+    color: var(--md-on-surface-variant);
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    transition: color .15s, border-color .15s;
+}
+
+.app-tab:hover {
+    color: var(--md-on-surface);
+}
+
+.app-tab.active {
+    color: var(--md-primary);
+    border-bottom-color: var(--md-primary);
+}
+
+.container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 24px 16px 64px;
+}
+
+.card {
+    background: var(--md-surface-container);
+    border-radius: var(--md-radius);
+    padding: 24px;
+    box-shadow: var(--md-shadow);
+}
+
+h1.headline {
+    font-size: 1.6rem;
+    font-weight: 500;
+    margin: 0 0 4px;
+}
+
+.subtitle {
+    color: var(--md-on-surface-variant);
+    margin: 0 0 24px;
+}
+
+/* 폼 필드 */
+.field {
+    margin-bottom: 20px;
+}
+
+.field label {
+    display: block;
+    font-size: .9rem;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: var(--md-on-surface-variant);
+}
+
+.field .optional {
+    font-weight: 400;
+    color: var(--md-outline);
+    font-size: .82rem;
+}
+
+.field input[type="text"],
+.field input[type="email"],
+.field input[type="password"],
+.field select {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 1rem;
+    color: var(--md-on-surface);
+    background: var(--md-surface-container-high);
+    border: 1px solid var(--md-outline-variant);
+    border-radius: var(--md-radius-sm);
+    outline: none;
+    transition: border-color .15s;
+}
+
+.field input:focus,
+.field select:focus {
+    border-color: var(--md-primary);
+    border-width: 2px;
+    padding: 13px 15px;
+}
+
+.field .help {
+    font-size: .82rem;
+    color: var(--md-on-surface-variant);
+    margin-top: 6px;
+}
+
+.field .error-text {
+    color: var(--md-error);
+    font-size: .82rem;
+    margin-top: 6px;
+}
+
+.field .error-text:empty {
+    display: none;
+}
+
+/* 입력값 아래에 붙는 체크박스 한 줄(예: 이메일 수신 여부) */
+.field .check-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 0 0;
+    font-size: .88rem;
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.field .check-row input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    flex: none;
+    accent-color: var(--md-primary);
+    cursor: pointer;
+}
+
+/* 필수 표시 */
+.req {
+    color: var(--md-error);
+    font-weight: 700;
+}
+
+/* 폼 전체(전역) 오류 */
+.form-alert {
+    background: color-mix(in srgb, var(--md-error) 12%, transparent);
+    color: var(--md-error);
+    border-radius: var(--md-radius-sm);
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    font-size: .9rem;
+}
+
+.field.has-error input,
+.field.has-error select,
+.field.has-error .editor,
+.field.has-error .editor-wrap {
+    border-color: var(--md-error);
+}
+
+/* WYSIWYG */
+/* Quill 초기화 전에도 같은 자리를 차지하도록 높이를 미리 잡아둔다.
+   본문(.ql-container)이 남은 높이를 채우므로 툴바가 몇 줄이 되든 총 높이는 245px 로 같다. */
+.editor-wrap {
+    background: var(--md-surface-container-high);
+    border: 1px solid var(--md-outline-variant);
+    border-radius: var(--md-radius-sm);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 245px;
+}
+
+.editor-wrap .ql-toolbar,
+.editor-wrap .ql-container {
+    border: none !important;
+}
+
+.editor-wrap .ql-toolbar {
+    border-bottom: 1px solid var(--md-outline-variant) !important;
+}
+
+.editor-wrap .ql-container {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.editor-wrap .ql-editor {
+    flex: 1 1 auto;
+    font-size: 1rem;
+}
+
+/* 파일 입력 */
+.file-list {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* 버튼 */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: none;
+    border-radius: 100px;
+    padding: 12px 24px;
+    font-size: .95rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: filter .15s, background .15s;
+}
+
+.btn-filled {
+    background: var(--md-primary);
+    color: var(--md-on-primary);
+}
+
+.btn-filled:hover {
+    filter: brightness(1.08);
+}
+
+.btn-tonal {
+    background: var(--md-primary-container);
+    color: var(--md-on-primary-container);
+}
+
+.btn-text {
+    background: transparent;
+    color: var(--md-primary);
+    padding: 10px 16px;
+}
+
+.btn-icon {
+    background: transparent;
+    color: var(--md-on-surface-variant);
+    border-radius: 100px;
+    padding: 8px;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-icon:hover {
+    background: var(--md-surface-container-high);
+}
+
+.btn-block {
+    width: 100%;
+}
+
+/* 제출 중 버튼 인디케이터 — 아이콘/글자는 숨기고 가운데에 스피너만 돌린다 */
+.btn.is-loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.btn.is-loading > * {
+    visibility: hidden;
+}
+
+.btn.is-loading::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 18px;
+    height: 18px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: btn-spin .6s linear infinite;
+}
+
+@keyframes btn-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+/* 캡차 — 이미지와 입력창을 한 줄에, 이미지 높이는 입력창에 맞춘다 */
+.captcha-row {
+    display: flex;
+    align-items: stretch;
+    gap: 12px;
+}
+
+.captcha-row img {
+    align-self: stretch;
+    height: auto;
+    width: 120px;
+    object-fit: contain;
+    border-radius: var(--md-radius-sm);
+    border: 1px solid var(--md-outline-variant);
+    background: #fff;
+}
+
+.captcha-row input {
+    flex: 1;
+    min-width: 0;
+}
+
+/* 칩 / 상태 */
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: .82rem;
+    font-weight: 500;
+}
+
+.chip-received {
+    background: var(--md-surface-container-high);
+    color: var(--md-on-surface-variant);
+}
+
+.chip-done {
+    background: var(--md-primary-container);
+    color: var(--md-on-primary-container);
+}
+
+/* 접수 확인 페이지 — 최근 등록된 의견 목록 */
+.recent-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 8px;
+}
+
+.recent-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 12px;
+    row-gap: 4px;
+    padding: 12px 10px;
+    border-radius: var(--md-radius-sm);
+    text-decoration: none;
+    color: inherit;
+    transition: background .15s;
+}
+
+.recent-item:hover {
+    background: var(--md-surface-container-high);
+}
+
+.recent-title {
+    grid-column: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+}
+
+.recent-status {
+    grid-column: 2;
+}
+
+.recent-meta {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 10px;
+    font-size: .82rem;
+    color: var(--md-on-surface-variant);
+}
+
+.recent-receipt {
+    font-family: monospace;
+}
+
+/* 메타 정보 */
+.meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    color: var(--md-on-surface-variant);
+    font-size: .88rem;
+    margin: 12px 0;
+}
+
+.divider {
+    height: 1px;
+    background: var(--md-outline-variant);
+    border: none;
+    margin: 24px 0;
+}
+
+.content-body {
+    word-break: break-word;
+}
+
+.content-body img {
+    max-width: 100%;
+}
+
+/* 언어 선택 */
+.lang-select {
+    background: transparent;
+    color: var(--md-on-surface-variant);
+    border: 1px solid var(--md-outline-variant);
+    border-radius: 100px;
+    padding: 6px 10px;
+    font-size: .85rem;
+}
+
+/* 접수 완료 */
+.receipt-box {
+    background: var(--md-primary-container);
+    color: var(--md-on-primary-container);
+    border-radius: var(--md-radius);
+    padding: 20px;
+    text-align: center;
+    margin: 16px 0;
+}
+
+.receipt-no {
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.receipt-no-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.receipt-box .btn-icon {
+    color: inherit;
+}
+
+.receipt-box .btn-icon:hover {
+    background: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+/* 완료 페이지 원형 액션 버튼(링크 복사 / 후원) */
+.icon-actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.fab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    text-decoration: none;
+    background: var(--md-primary-container);
+    color: var(--md-on-primary-container);
+    box-shadow: var(--md-shadow);
+    transition: filter .15s;
+}
+
+.fab:hover {
+    filter: brightness(1.05);
+}
+
+.fab .material-symbols-outlined {
+    font-size: 1.6rem;
+}
+
+/* 복사 토스트 */
+.toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--md-on-surface);
+    color: var(--md-surface);
+    padding: 10px 18px;
+    border-radius: 100px;
+    font-size: .9rem;
+    opacity: 0;
+    transition: opacity .25s, transform .25s;
+    z-index: 100;
+    pointer-events: none;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.link-list a {
+    color: var(--md-primary);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.link-list a:hover {
+    text-decoration: underline;
+}
+
+/* ===== 파일 업로드 (FilePond) — 테마 변수 연동 ===== */
+/* 드롭 영역 모양은 바깥 wrap 이 그린다. FilePond 초기화 전후로 같은 상자가 보인다. */
+.filepond-wrap {
+    background: var(--md-surface-container-high);
+    border: 1px solid var(--md-outline-variant);
+    border-radius: var(--md-radius-sm);
+    min-height: 76px;
+}
+
+/* 초기화 전 네이티브 파일 입력은 감춘다(초기화되면 .filepond--root 안으로 들어가 이 규칙에서 벗어난다) */
+.filepond-wrap > input[type="file"] {
+    visibility: hidden;
+    display: block;
+    width: 100%;
+    height: 76px;
+}
+
+.filepond-wrap .filepond--root {
+    margin-bottom: 0;
+}
+
+.filepond--panel-root {
+    background: transparent;
+    border: none;
+}
+
+.filepond--drop-label {
+    color: var(--md-on-surface-variant);
+}
+
+.filepond--label-action {
+    color: var(--md-primary);
+    text-decoration-color: var(--md-primary);
+}
+
+.filepond--credits {
+    display: none;
+}
+
+/* 프로젝트 선택 — readonly 트리거 입력(클릭하면 선택 팝업이 뜬다) */
+.project-trigger-wrap {
+    position: relative;
+    cursor: pointer;
+}
+
+.project-trigger-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--md-on-surface-variant);
+    pointer-events: none;
+}
+
+.field input.project-trigger {
+    padding-left: 44px;
+    cursor: pointer;
+    caret-color: transparent;
+}
+
+.field input.project-trigger:focus {
+    padding: 13px 15px 13px 43px;
+}
+
+/* 프로젝트 선택 팝업 */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    z-index: 50;
+}
+
+.modal-overlay[hidden] {
+    display: none;
+}
+
+.modal-card {
+    width: 100%;
+    max-width: 440px;
+    max-height: 80vh;
+    background: var(--md-surface);
+    /* 다크 모드에서는 카드 배경과 어두워진 배경이 거의 같은 톤이라 테두리가 없으면 경계가 안 보인다. */
+    border: 1px solid var(--md-outline-variant);
+    border-radius: var(--md-radius);
+    box-shadow: var(--md-shadow);
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    gap: 12px;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 1.05rem;
+    font-weight: 500;
+}
+
+.modal-search {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: .95rem;
+    color: var(--md-on-surface);
+    background: var(--md-surface-container-high);
+    border: 1px solid var(--md-outline-variant);
+    border-radius: var(--md-radius-sm);
+    outline: none;
+}
+
+.project-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.project-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px;
+    border-radius: var(--md-radius-sm);
+    cursor: pointer;
+}
+
+.project-list li:hover {
+    background: var(--md-surface-container-high);
+}
+
+.project-list li.is-empty {
+    color: var(--md-on-surface-variant);
+    text-align: center;
+    justify-content: center;
+    cursor: default;
+}
+
+.project-list li.is-empty:hover {
+    background: transparent;
+}
+
+.project-list .project-list-name {
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.project-list .project-list-url {
+    font-size: .82rem;
+    color: var(--md-primary);
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.project-list .project-list-url:hover {
+    text-decoration: underline;
+}
+
+/* ===== 반응형: 모바일 (~600px) ===== */
+/* PC/태블릿은 .container(max-width:720px) 유동형 레이아웃으로 그대로 동작하고,
+   좁은 화면에서만 여백/타이포/가로 배치 요소를 조정한다. */
+@media (max-width: 600px) {
+    .app-bar-inner {
+        padding: 0 12px;
+        gap: 4px;
+    }
+
+    .app-tab {
+        padding: 12px 8px;
+        font-size: .95rem;
+    }
+
+    .container {
+        padding: 16px 12px 48px;
+    }
+
+    .card {
+        padding: 16px;
+        border-radius: var(--md-radius-sm);
+    }
+
+    h1.headline {
+        font-size: 1.35rem;
+    }
+
+    .subtitle {
+        margin-bottom: 20px;
+    }
+
+    .receipt-no {
+        font-size: 1.5rem;
+    }
+}

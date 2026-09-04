@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<body>
+<!-- 의견 상세. 목록 화면의 레이어 팝업 안에 끼워 넣는다(/admin/feedbacks/{id}/detail). -->
+<div th:fragment="modal" class="flex flex-col min-h-0 overflow-hidden">
+
+    <!-- 헤더: 상태/접수번호/이메일/프로젝트/등록일시/제목 -->
+    <div class="flex items-start gap-3 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <div class="min-w-0 flex-1">
+            <!-- 상태/접수번호/이메일/프로젝트/등록일시를 같은 칩 스타일로 한 줄에 둔다(좁아지면 줄바꿈) -->
+            <div class="flex flex-wrap items-center gap-2 mb-2">
+                <span th:if="${feedback.done}"
+                      class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                    <i class="fa-solid fa-check"></i><span>처리완료</span>
+                </span>
+                <span th:unless="${feedback.done}"
+                      class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300">
+                    <i class="fa-regular fa-clock"></i><span>접수됨</span>
+                </span>
+                <span class="font-mono text-xs px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-700" th:text="${feedback.receiptNo}">R</span>
+                <a th:if="${feedback.email != null}" th:href="'mailto:' + ${feedback.email}"
+                   class="font-mono text-xs px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-700 hover:underline"
+                   th:text="${feedback.email}">email</a>
+                <!-- 접수자가 등록할 때 이메일 수신을 골랐는지 -->
+                <span th:if="${feedback.email != null}"
+                      class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs"
+                      th:classappend="${feedback.emailReply}
+                          ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
+                          : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400'"
+                      th:title="${feedback.emailReply} ? '접수자가 이메일 수신을 원합니다' : '접수자가 이메일 수신을 원하지 않습니다'">
+                    <i class="fa-solid" th:classappend="${feedback.emailReply} ? 'fa-envelope' : 'fa-envelope-open'"></i>
+                    <span th:text="${feedback.emailReply} ? '메일 수신 희망' : '메일 수신 안 함'">메일 수신 희망</span>
+                </span>
+                <span class="font-mono text-xs px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-700"
+                      th:text="${feedback.projectName}">P</span>
+                <time class="font-mono text-xs px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-700"
+                      th:datetime="${feedback.createdAt}"
+                      th:text="${@dateTimes.formatKst(feedback.createdAt)}">-</time>
+                <span th:if="${feedback.secret}" class="text-xs text-gray-400" title="비밀글">
+                    <i class="fa-solid fa-lock"></i>
+                </span>
+            </div>
+            <h2 class="text-xl font-semibold break-words" th:text="${feedback.title}">제목</h2>
+        </div>
+        <button type="button" data-modal-close title="닫기"
+                class="w-8 h-8 shrink-0 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <form data-reply-form th:attr="data-id=${feedback.id}" class="flex flex-col flex-1 min-h-0">
+        <!-- 본문: 팝업 안에서만 스크롤한다 -->
+        <div class="flex-1 min-h-0 overflow-y-auto px-6 py-4">
+            <div class="prose max-w-none dark:prose-invert break-words"
+                 th:utext="${feedback.content}">내용</div>
+
+            <!-- 첨부 파일 -->
+            <div th:if="${!feedback.files.isEmpty()}" class="mt-4 border-t border-gray-100 dark:border-gray-700 pt-4">
+                <h3 class="text-sm font-semibold mb-2">첨부 파일</h3>
+                <ul class="space-y-1">
+                    <li th:each="f : ${feedback.files}">
+                        <a th:href="@{/feedbacks/{id}/files/{fid}(id=${feedback.id},fid=${f.id})}"
+                           th:target="${f.pdf} ? '_blank'"
+                           th:attr="data-preview=${f.image} ? 'image' : null"
+                           class="text-blue-600 dark:text-blue-400 hover:underline text-sm flex items-center gap-1">
+                            <i class="fa-solid"
+                               th:classappend="${f.image} ? 'fa-image' : (${f.pdf} ? 'fa-file-pdf' : 'fa-paperclip')"></i>
+                            <span th:text="${f.originalName}">file</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- 처리 내용 -->
+            <div class="mt-6 border-t border-gray-100 dark:border-gray-700 pt-4">
+                <h3 class="text-sm font-semibold mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <span>처리 내용</span>
+                </h3>
+                <input type="hidden" data-reply-content th:value="${feedback.replyContent}">
+                <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-300 dark:border-gray-600 overflow-hidden">
+                    <div data-editor="reply" data-target="[data-reply-content]" style="min-height:180px;"></div>
+                </div>
+
+                <!-- 처리완료 시 메일을 보낼지는 관리자가 고르지 않는다. 접수자가 등록할 때 고른
+                     수신 여부(위 '메일 수신 희망' 태그)를 그대로 따른다. -->
+            </div>
+        </div>
+
+        <!-- 푸터: 버튼 -->
+        <div class="flex items-center justify-between gap-2 px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+            <button type="submit" data-action="complete"
+                    class="px-4 py-2 rounded-lg text-white text-sm font-medium flex items-center gap-2"
+                    th:classappend="${feedback.done} ? 'bg-amber-500 hover:bg-amber-600' : 'bg-green-600 hover:bg-green-700'">
+                <i class="fa-solid" th:classappend="${feedback.done} ? 'fa-rotate-left' : 'fa-check'"></i>
+                <span th:text="${feedback.done} ? '완료 취소' : '처리완료'">처리완료</span>
+            </button>
+            <div class="flex items-center gap-2">
+                <button type="submit" data-action="save"
+                        class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium flex items-center gap-2">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    <span>저장</span>
+                </button>
+                <button type="button" data-modal-close
+                        class="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-sm font-medium flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <i class="fa-solid fa-xmark"></i>
+                    <span>닫기</span>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>

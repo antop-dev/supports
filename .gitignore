@@ -1,0 +1,23 @@
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+### IntelliJ ###
+.idea/
+*.iml
+out/
+
+### Runtime data (SQLite DB, uploaded files) ###
+/data/*.db
+/data/*.db-*
+/data/uploads/
+
+### OS ###
+.DS_Store
+
+### Env ###
+.env
+
+data/
+.kotlin/
+.claude/

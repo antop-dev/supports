@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head th:fragment="head(pageTitle)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- CSRF 토큰. 일반 폼은 히든 필드로, fetch/XHR 는 csrf.js 를 통해 헤더로 보낸다. -->
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <title th:text="|${pageTitle} · 관리자|">관리자</title>
+    <!-- 관리자 페이지는 다크 테마 고정 -->
+    <script>document.documentElement.classList.add('dark');</script>
+    <script th:src="@{/vendor/tailwind/tailwind.js}"></script>
+    <script>tailwind.config = { darkMode: 'class' };</script>
+    <link rel="stylesheet" th:href="@{/vendor/flowbite/flowbite.min.css}">
+    <link rel="stylesheet" th:href="@{/vendor/fontawesome/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/vendor/quill/quill.snow.css}">
+    <link rel="stylesheet" th:href="@{/vendor/gridjs/mermaid.min.css}">
+    <link rel="stylesheet" th:href="@{/css/admin-grid.css}">
+    <link rel="stylesheet" th:href="@{/css/file-preview.css}">
+    <!-- 관리자 페이지는 PC 전용: 최소 가로 폭 1200px 고정 -->
+    <!-- 본문 기본 글자는 한 단계 작게(16px → 14px). 그리드 셀·팝업 본문처럼 클래스 없이 상속받는 곳에 적용된다. -->
+    <style>body { min-width: 1200px; font-size: 0.875rem; }</style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+
+<th:block th:fragment="navbar(active)">
+<nav class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+    <div class="max-w-[1200px] mx-auto px-4 flex items-center gap-6">
+        <span class="py-3 text-lg font-semibold flex items-center gap-2">
+            <i class="fa-solid fa-inbox"></i>
+            <span>관리자</span>
+        </span>
+        <a th:href="@{/admin/feedbacks}"
+           class="py-4 -mb-px border-b-2 text-sm flex items-center gap-1"
+           th:classappend="${active == 'feedbacks'}
+               ? 'border-blue-500 text-blue-600 dark:text-blue-400 font-semibold'
+               : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'">
+            <i class="fa-solid fa-comments"></i><span>의견 목록</span>
+        </a>
+        <a th:href="@{/admin/projects}"
+           class="py-4 -mb-px border-b-2 text-sm flex items-center gap-1"
+           th:classappend="${active == 'projects'}
+               ? 'border-blue-500 text-blue-600 dark:text-blue-400 font-semibold'
+               : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'">
+            <i class="fa-solid fa-folder"></i><span>프로젝트 관리</span>
+        </a>
+        <a th:href="@{/admin/accounts}"
+           class="py-4 -mb-px border-b-2 text-sm flex items-center gap-1"
+           th:classappend="${active == 'accounts'}
+               ? 'border-blue-500 text-blue-600 dark:text-blue-400 font-semibold'
+               : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'">
+            <i class="fa-solid fa-users-gear"></i><span>계정 관리</span>
+        </a>
+        <div class="flex-1"></div>
+        <!-- 비밀번호 변경은 페이지 이동 없이 레이어 팝업으로 처리한다 -->
+        <button type="button" id="passwordBtn"
+                class="text-sm flex items-center gap-1 text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
+            <i class="fa-solid fa-key"></i><span>비밀번호 변경</span>
+        </button>
+        <form th:action="@{/admin/logout}" method="post" class="inline">
+            <button type="submit" class="text-sm text-red-600 hover:underline flex items-center gap-1">
+                <i class="fa-solid fa-right-from-bracket"></i><span>로그아웃</span>
+            </button>
+        </form>
+    </div>
+</nav>
+
+<!-- 비밀번호 변경 팝업. 변경에 성공하면 세션이 끊기므로 로그인 화면으로 보낸다. -->
+<div id="passwordModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4"
+     th:attr="data-url=@{/admin/password},data-login-url=@{/admin/login(passwordChanged=1)}">
+    <div class="w-[440px] rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xl p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold flex items-center gap-2">
+                <i class="fa-solid fa-key"></i><span>비밀번호 변경</span>
+            </h2>
+            <button type="button" class="text-gray-400 hover:text-gray-200" data-modal-close title="닫기">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <form id="passwordForm" class="space-y-3">
+            <div>
+                <label class="block text-sm font-medium mb-1">현재 비밀번호</label>
+                <input type="password" id="pw-current" autocomplete="current-password"
+                       class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 px-3 py-2 text-sm">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">새 비밀번호</label>
+                <input type="password" id="pw-new" autocomplete="new-password"
+                       class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 px-3 py-2 text-sm">
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">8자 이상 입력하세요.</p>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">새 비밀번호 확인</label>
+                <input type="password" id="pw-confirm" autocomplete="new-password"
+                       class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 px-3 py-2 text-sm">
+            </div>
+            <p class="text-xs text-amber-600 dark:text-amber-400 flex items-start gap-1">
+                <i class="fa-solid fa-circle-info mt-0.5"></i>
+                <span>비밀번호를 변경하면 로그아웃됩니다. 새 비밀번호로 다시 로그인하세요.</span>
+            </p>
+            <p id="pw-error" class="hidden text-sm text-red-500"></p>
+
+            <div class="flex justify-end gap-2 pt-1">
+                <button type="button" data-modal-close
+                        class="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-sm hover:bg-gray-100 dark:hover:bg-gray-700">취소</button>
+                <button type="submit" id="pw-save"
+                        class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium">변경하기</button>
+            </div>
+        </form>
+    </div>
+</div>
+</th:block>
+
+<div th:fragment="scripts">
+    <script th:src="@{/js/csrf.js}"></script>
+    <script th:src="@{/vendor/quill/quill.js}"></script>
+    <script th:src="@{/js/quill-init.js}"></script>
+    <script th:src="@{/vendor/flowbite/flowbite.min.js}"></script>
+    <script th:src="@{/js/admin-password.js}"></script>
+    <script th:src="@{/js/file-preview.js}"></script>
+</div>
+
+<!-- Grid.js 를 쓰는 화면에서만 추가로 로드한다. -->
+<div th:fragment="grid-scripts">
+    <script th:src="@{/vendor/gridjs/gridjs.umd.js}"></script>
+    <script th:src="@{/js/i18n/grid.locale-kr.js}"></script>
+    <script th:src="@{/js/admin-grid-common.js}"></script>
+</div>
+
+</body>
+</html>

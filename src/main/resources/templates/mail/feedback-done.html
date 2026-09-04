@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="#{mail.done.heading}">처리 완료 안내</title>
+    <!--
+      메일은 외부 CSS·폰트를 못 불러오는 클라이언트가 많다.
+      · 색과 여백은 사용자 페이지(user.css)의 Material 3 라이트 팔레트를 그대로 옮겨 적었다.
+      · style 블록을 지우는 클라이언트가 있어 모든 규칙을 각 요소의 style 속성에도 넣어 둔다.
+      · 레이아웃은 flex/grid 대신 table 로 짠다(구형 메일 클라이언트 호환).
+    -->
+    <style>
+        body { margin: 0; padding: 0; background: #f0edf4; }
+        a { color: #4a5cc4; }
+        @media only screen and (max-width: 620px) {
+            .mail-card { width: 100% !important; }
+            .mail-pad { padding: 20px !important; }
+            .mail-label { display: block !important; width: auto !important; padding-bottom: 2px !important; }
+            .mail-value { display: block !important; padding-bottom: 12px !important; }
+        }
+    </style>
+</head>
+<body style="margin:0;padding:0;background:#f0edf4;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+       style="background:#f0edf4;padding:24px 12px;">
+    <tr>
+        <td align="center">
+            <table role="presentation" class="mail-card" width="600" cellpadding="0" cellspacing="0" border="0"
+                   style="width:600px;max-width:100%;background:#fbf8fd;border:1px solid #c7c5d0;border-radius:16px;
+                          font-family:'Roboto',system-ui,-apple-system,'Segoe UI','Malgun Gothic','Apple SD Gothic Neo',sans-serif;
+                          color:#1b1b1f;line-height:1.6;">
+
+                <!-- 상단 바: 사용자 페이지의 앱 바와 같은 색을 쓴다 -->
+                <tr>
+                    <td style="background:#dee0ff;padding:18px 28px;border-radius:16px 16px 0 0;">
+                        <span style="font-size:16px;font-weight:700;color:#00105c;letter-spacing:-0.2px;"
+                              th:text="#{app.title}">의견 접수</span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="mail-pad" style="padding:28px;">
+
+                        <!-- 접수 내용 확인 링크 -->
+                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                            <tr>
+                                <td align="center" style="padding-bottom:24px;">
+                                    <a th:href="${viewUrl}" target="_blank"
+                                       style="display:inline-block;background:#4a5cc4;color:#ffffff;text-decoration:none;
+                                              font-size:15px;font-weight:600;padding:13px 32px;border-radius:100px;"
+                                       th:text="#{mail.done.viewButton}">접수 내용 확인</a>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- 안내 문구 -->
+                        <p style="margin:0 0 24px;font-size:17px;font-weight:600;color:#1b1b1f;text-align:center;"
+                           th:text="#{mail.done.heading}">문의하신 의견의 처리가 완료되었습니다.</p>
+
+                        <!-- 접수 정보 -->
+                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"
+                               style="background:#f0edf4;border-radius:10px;padding:4px 0;">
+                            <tr>
+                                <td class="mail-label" width="110"
+                                    style="padding:10px 8px 10px 18px;font-size:13px;color:#46464f;vertical-align:top;white-space:nowrap;"
+                                    th:text="#{mail.done.receiptNo}">접수번호</td>
+                                <td class="mail-value" style="padding:10px 18px 10px 8px;font-size:14px;color:#1b1b1f;word-break:break-all;"
+                                    th:text="${receiptNo}">20260828-ABC123</td>
+                            </tr>
+                            <tr>
+                                <td class="mail-label" width="110"
+                                    style="padding:10px 8px 10px 18px;font-size:13px;color:#46464f;vertical-align:top;white-space:nowrap;"
+                                    th:text="#{mail.done.project}">프로젝트</td>
+                                <td class="mail-value" style="padding:10px 18px 10px 8px;font-size:14px;color:#1b1b1f;word-break:break-word;"
+                                    th:text="${projectName}">프로젝트명</td>
+                            </tr>
+                            <tr>
+                                <td class="mail-label" width="110"
+                                    style="padding:10px 8px 10px 18px;font-size:13px;color:#46464f;vertical-align:top;white-space:nowrap;"
+                                    th:text="#{mail.done.title}">제목</td>
+                                <td class="mail-value" style="padding:10px 18px 10px 8px;font-size:14px;color:#1b1b1f;word-break:break-word;"
+                                    th:text="${title}">의견 제목</td>
+                            </tr>
+                        </table>
+
+                        <!-- 처리 내용 -->
+                        <p style="margin:28px 0 8px;font-size:13px;font-weight:600;color:#46464f;"
+                           th:text="#{mail.done.reply}">처리 내용</p>
+                        <div th:if="${replyContent}" th:utext="${replyContent}"
+                             style="margin:0;padding:18px;background:#ffffff;border:1px solid #c7c5d0;border-radius:10px;
+                                    font-size:14px;color:#1b1b1f;word-break:break-word;">처리 내용</div>
+                        <p th:unless="${replyContent}"
+                           style="margin:0;padding:18px;background:#ffffff;border:1px solid #c7c5d0;border-radius:10px;
+                                  font-size:14px;color:#46464f;"
+                           th:text="#{mail.done.noReply}">남긴 처리 내용이 없습니다.</p>
+
+                        <!-- 버튼이 눌리지 않는 클라이언트를 위해 주소를 그대로 한 번 더 보여준다 -->
+                        <p style="margin:24px 0 0;font-size:12px;color:#46464f;word-break:break-all;">
+                            <a th:href="${viewUrl}" th:text="${viewUrl}" target="_blank"
+                               style="color:#4a5cc4;">https://example.com/feedbacks/1</a>
+                        </p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>
