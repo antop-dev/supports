@@ -10,6 +10,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter
+import org.springframework.security.web.header.writers.StaticHeadersWriter
 
 /**
  * 스프링 시큐리티가 CSRF 방어와 보안 헤더를 맡는다.
@@ -37,6 +38,9 @@ class SecurityConfig {
         http
             .securityMatcher("/admin/**")
             .applyCommonRules(ADMIN_CSP, csrfAccessDeniedHandler)
+            // 관리 화면이 어디선가 링크되더라도 색인되지 않게 한다.
+            // robots.txt 는 크롤링만 막을 뿐, 외부 링크로 알려진 주소의 색인은 막지 못한다.
+            .headers { it.addHeaderWriter(StaticHeadersWriter("X-Robots-Tag", "noindex, nofollow")) }
             .build()
 
     @Bean

@@ -25,6 +25,12 @@ class UrlBuilder(
         id: String,
     ): String = "${base(request)}/admin/feedbacks/$id"
 
+    /** 임의 경로(컨텍스트 경로 제외)의 절대 주소. canonical·sitemap 처럼 화면 밖으로 나가는 주소에 쓴다. */
+    fun absolute(
+        request: HttpServletRequest,
+        path: String,
+    ): String = base(request) + path.removeSuffix("/").ifEmpty { "/" }
+
     private fun base(request: HttpServletRequest): String =
         if (appProperties.baseUrl.isNotBlank()) {
             appProperties.baseUrl.trimEnd('/') + request.contextPath

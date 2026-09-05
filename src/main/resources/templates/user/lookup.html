@@ -32,7 +32,8 @@
         <h2 style="font-size:1.05rem;font-weight:500;" th:text="#{lookup.recent.title}">최근 등록된 의견</h2>
 
         <div class="recent-list" th:if="${!recentFeedbacks.isEmpty()}">
-            <a class="recent-item" th:each="item : ${recentFeedbacks}"
+            <!-- 이 화면은 색인하지만 개별 의견은 비색인이다. 크롤 예산을 낭비하지 않도록 링크에도 표시한다. -->
+            <a class="recent-item" rel="nofollow" th:each="item : ${recentFeedbacks}"
                th:href="@{/feedbacks/{id}(id=${item.id})}">
                 <span class="recent-title" th:text="${item.title}">제목</span>
                 <span class="chip recent-status" th:classappend="${item.done} ? 'chip-done' : 'chip-received'">

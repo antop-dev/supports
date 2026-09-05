@@ -7,6 +7,8 @@
     <meta name="_csrf" th:content="${_csrf.token}">
     <meta name="_csrf_header" th:content="${_csrf.headerName}">
     <title th:text="|${pageTitle} · 관리자|">관리자</title>
+    <!-- 관리 화면은 어떤 경우에도 색인하지 않는다. 응답 헤더(X-Robots-Tag)로도 한 번 더 막는다(SecurityConfig). -->
+    <meta name="robots" content="noindex, nofollow">
     <!-- 관리자 페이지는 다크 테마 고정 -->
     <script>document.documentElement.classList.add('dark');</script>
     <script th:src="@{/vendor/tailwind/tailwind.js}"></script>

@@ -7,6 +7,32 @@
     <meta name="_csrf" th:content="${_csrf.token}">
     <meta name="_csrf_header" th:content="${_csrf.headerName}">
     <title th:text="|${pageTitle} · #{app.title}|">의견 접수</title>
+    <meta name="description" th:content="#{seo.description}">
+
+    <!-- 색인 여부는 화면마다 적지 않고 GlobalModelAdvice 가 SeoPaths 를 보고 정한다.
+         값이 없으면(예: 예외 핸들러가 그리는 오류 화면 - @ModelAttribute 가 적용되지 않는다)
+         색인을 막는 쪽으로 판단한다. 빠뜨렸을 때 사용자 제출 내용이 색인되는 사고를 막는다. -->
+    <meta name="robots" th:content="${noIndex == false} ? 'index, follow' : 'noindex, nofollow'">
+    <link th:if="${noIndex == false}" rel="canonical" th:href="${canonicalUrl}">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" th:content="#{app.title}">
+    <meta property="og:title" th:content="|${pageTitle} · #{app.title}|">
+    <meta property="og:description" th:content="#{seo.description}">
+    <meta property="og:url" th:content="${canonicalUrl}">
+    <meta name="twitter:card" content="summary">
+
+    <!-- 생성형 AI 검색·검색 엔진이 사이트 성격을 파악하도록 남긴다. 비색인 화면에는 넣지 않는다. -->
+    <script th:if="${noIndex == false}" type="application/ld+json" th:inline="javascript">
+        {
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": [[#{app.title}]],
+          "description": [[#{seo.description}]],
+          "url": [[${canonicalUrl}]],
+          "inLanguage": [[${#locale.language}]]
+        }
+    </script>
     <!-- 테마 조기 적용(깜빡임 방지) -->
     <script th:src="@{/js/theme.js}"></script>
     <!-- 아이콘 폰트는 첫 화면에 바로 필요하므로 미리 받는다(폰트는 same-origin 이라도 crossorigin 필수) -->

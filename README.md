@@ -121,6 +121,39 @@ SMTP 호스트·포트·계정은 고정값이라 워크플로에 직접 적혀 
 레이어드 아키텍처(`controller → service → repository`). DB 스키마 변경은
 `src/main/resources/db/migration` 의 Flyway 마이그레이션으로만 한다.
 
+## SEO / GEO
+
+검색 엔진과 생성형 AI 검색에 **진입 화면만** 노출한다. 사용자가 남긴 의견 내용은 색인하지 않는다.
+
+| 화면 | 색인 |
+| --- | --- |
+| `/`, `/feedbacks/new`, `/feedbacks/lookup` | 허용 |
+| 개별 의견, 접수 완료, 비밀글 확인, 첨부 파일, 오류 화면 | 차단 |
+| 관리 화면(`/admin/**`) | 차단 (`meta` + `X-Robots-Tag` 응답 헤더) |
+
+색인 허용 목록은 `web/SeoPaths.kt` 한 곳에만 있다. robots.txt·sitemap.xml·페이지의
+`<meta name="robots">` 가 모두 이 값을 본다. 목록에 없으면 **기본이 noindex** 다.
+
+`robots.txt` / `sitemap.xml` / `llms.txt` 는 `SeoController` 가 만들어 내려준다.
+도메인이 배포마다 달라 정적 파일로 두지 않고 `BASE_URL` 기준으로 절대 주소를 채운다.
+
+### 앞단(nginx) 설정
+
+크롤러는 **도메인 루트**의 `/robots.txt` 만 읽는다. 이 앱은 context-path(`/supports`)
+아래에서 돌기 때문에 앞단에서 연결해 줘야 한다.
+
+```nginx
+location = /robots.txt  { proxy_pass http://127.0.0.1:20002/supports/robots.txt; }
+location = /sitemap.xml { proxy_pass http://127.0.0.1:20002/supports/sitemap.xml; }
+location = /llms.txt    { proxy_pass http://127.0.0.1:20002/supports/llms.txt; }
+```
+
+이 설정이 없으면 robots.txt 가 적용되지 않는다. 다만 페이지마다 `meta` 태그로도 막고
+있으므로 사용자 의견이 색인되지는 않는다.
+
+`BASE_URL` 을 설정하지 않으면 sitemap 의 주소가 요청 기준으로 만들어져 내부 주소가
+그대로 나갈 수 있다. 운영에서는 반드시 지정한다.
+
 ## 라이선스
 
 이 프로젝트는 [MIT 라이선스](LICENSE)를 따른다.
