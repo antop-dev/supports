@@ -102,6 +102,17 @@
 .gj-icon-btn:hover { background: #7f1d1d; color: #fee2e2; border-color: #b91c1c; }
 .gj-icon-btn:disabled { opacity: .4; cursor: not-allowed; }
 
+/* 코드 셀: 코드 값 + 접수 폼 링크 복사 버튼 */
+.gj-code-cell { display: flex; align-items: center; gap: 6px; }
+.gj-code-cell .gj-edit {
+    flex: 1; min-width: 0;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+/* 삭제 버튼과 같은 모양을 쓰되 경고색은 빼둔다. */
+.gj-copy { flex: none; color: #9ca3af; padding: 4px 8px; }
+.gj-copy:hover { background: #1f2937; color: #e5e7eb; border-color: #6b7280; }
+
 /* 토스트 */
 .gj-toast {
     position: fixed; left: 50%; bottom: 32px; transform: translateX(-50%);

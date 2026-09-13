@@ -10,6 +10,8 @@ import org.springframework.data.repository.query.Param
 interface ProjectRepository : JpaRepository<Project, String> {
     fun findAllByEnabledTrueOrderBySortOrderAscCreatedAtAsc(): List<Project>
 
+    fun findByCode(code: String): Project?
+
     /** 프로젝트명/활성화 여부 조건(널이면 무시)으로 검색한다. */
     @Query(
         """

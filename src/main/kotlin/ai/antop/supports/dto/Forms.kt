@@ -32,6 +32,8 @@ data class ProjectForm(
     @field:NotBlank(message = "프로젝트명을 입력하세요.")
     @field:Size(max = 100, message = "프로젝트명은 최대 100자까지 입력할 수 있습니다.")
     var name: String = "",
+    /** 접수 폼 링크에 쓰는 공개 코드. 비우면 프로젝트명에서 자동 생성한다. */
+    var code: String? = null,
     var enabled: Boolean = true,
     var sortOrder: Int = 0,
     var url: String? = null,

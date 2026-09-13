@@ -12,6 +12,9 @@ import jakarta.persistence.Table
 class Project(
     @Column(name = "name", nullable = false)
     var name: String,
+    /** 접수 폼 링크(?project=)에 쓰는 공개 코드. PK 를 URL 에 노출하지 않기 위한 외부용 식별자다. */
+    @Column(name = "code", nullable = false, unique = true)
+    var code: String,
     @Column(name = "enabled", nullable = false)
     var enabled: Boolean = true,
     @Column(name = "sort_order", nullable = false)

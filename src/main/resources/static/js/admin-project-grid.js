@@ -15,6 +15,12 @@
         var G = window.AdminGrid;
         var dataUrl = mount.getAttribute('data-url'); // /ctx/admin/projects/data
         var baseUrl = mount.getAttribute('data-base'); // /ctx/admin/projects
+        var formUrl = mount.getAttribute('data-form'); // /ctx/feedbacks/new
+
+        /** 해당 프로젝트가 미리 선택된 접수 폼 주소. 관리자가 복사해 각 서비스에 걸어둔다. */
+        function shareLink(code) {
+            return window.location.origin + formUrl + '?project=' + encodeURIComponent(code);
+        }
 
         var state = { name: '', enabled: '' };
 
@@ -40,6 +46,42 @@
             return G.escapeHtml(value);
         }
 
+        /** 코드 셀: 값은 그 자리에서 수정하고, 옆 버튼으로 접수 폼 링크를 복사한다. */
+        function codeCell(cell, row) {
+            var id = row.cells[ID_INDEX].data;
+            var value = String(cell);
+            return gridjs.html(
+                '<span class="gj-code-cell">' +
+                '<span class="gj-edit" data-id="' + G.escapeHtml(id) + '" data-field="code"' +
+                ' data-value="' + G.escapeHtml(value) + '">' + G.escapeHtml(value) + '</span>' +
+                '<button type="button" class="gj-icon-btn gj-copy" title="접수 폼 링크 복사"' +
+                ' data-code="' + G.escapeHtml(value) + '"><i class="fa-solid fa-link"></i></button>' +
+                '</span>'
+            );
+        }
+
+        function copyShareLink(btn) {
+            var link = shareLink(btn.getAttribute('data-code'));
+            function done() {
+                G.toast('접수 폼 링크를 복사했습니다.');
+            }
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(link).then(done, done);
+                return;
+            }
+            var ta = document.createElement('textarea');
+            ta.value = link;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            try {
+                document.execCommand('copy');
+            } catch (e) { /* ignore */ }
+            ta.remove();
+            done();
+        }
+
         /** 수정 가능한 셀은 id/필드/현재값을 들고 있는 span 으로 그린다. */
         function editableCell(field) {
             return function (cell, row) {
@@ -55,6 +97,13 @@
 
         function renderValue(span, field, value) {
             span.innerHTML = display(field, value);
+            if (field === 'code') {
+                // 코드를 고쳤으면 옆 복사 버튼이 들고 있는 값도 같이 바꾼다.
+                var copyBtn = span.parentNode && span.parentNode.querySelector('.gj-copy');
+                if (copyBtn) {
+                    copyBtn.setAttribute('data-code', value);
+                }
+            }
         }
 
         // ---------- 셀 단위 수정 ----------
@@ -78,6 +127,8 @@
                 input.value = value;
                 if (field === 'name') {
                     input.maxLength = 100;
+                } else if (field === 'code') {
+                    input.maxLength = 50;
                 }
             }
             input.className = 'gj-edit-input';
@@ -159,6 +210,11 @@
                 removeProject(del);
                 return;
             }
+            var copyBtn = e.target.closest('.gj-copy');
+            if (copyBtn) {
+                copyShareLink(copyBtn);
+                return;
+            }
             if (e.target.closest('.gj-link')) {
                 // URL 링크는 새 탭으로 열게 두고, 편집 모드로 들어가지 않는다.
                 return;
@@ -171,14 +227,14 @@
 
         // ---------- 그리드 ----------
 
-        var ID_INDEX = 5;
+        var ID_INDEX = 6;
 
         function serverConfig() {
             return {
                 url: dataUrl + G.queryString(state),
                 then: function (data) {
                     return data.data.map(function (r) {
-                        return [r.name, r.url, r.sortOrder, String(r.enabled), r.createdAt, r.id];
+                        return [r.name, r.code, r.url, r.sortOrder, String(r.enabled), r.createdAt, r.id];
                     });
                 },
                 total: function (data) {
@@ -189,6 +245,7 @@
 
         var columns = [
             { name: '프로젝트명', formatter: editableCell('name') },
+            { name: '코드', width: '190px', formatter: codeCell },
             { name: 'URL', formatter: editableCell('url') },
             { name: '정렬 순서', width: '110px', formatter: editableCell('sortOrder') },
             { name: '활성화', width: '120px', formatter: editableCell('enabled') },
@@ -238,6 +295,7 @@
 
         function openModal() {
             document.getElementById('p-name').value = '';
+            document.getElementById('p-code').value = '';
             document.getElementById('p-sortOrder').value = '0';
             document.getElementById('p-url').value = '';
             document.getElementById('p-enabled').checked = true;
@@ -271,6 +329,7 @@
             errorEl.classList.add('hidden');
             G.postJson(baseUrl, {
                 name: document.getElementById('p-name').value,
+                code: document.getElementById('p-code').value,
                 sortOrder: parseInt(document.getElementById('p-sortOrder').value, 10) || 0,
                 enabled: document.getElementById('p-enabled').checked,
                 url: document.getElementById('p-url').value

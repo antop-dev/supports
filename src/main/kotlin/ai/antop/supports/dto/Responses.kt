@@ -27,6 +27,7 @@ data class LoginResponse(
 data class ProjectListItem(
     val id: String,
     val name: String,
+    val code: String,
     val sortOrder: Int,
     val enabled: Boolean,
     val url: String?,
@@ -37,6 +38,7 @@ data class ProjectListItem(
             ProjectListItem(
                 id = project.id,
                 name = project.name,
+                code = project.code,
                 sortOrder = project.sortOrder,
                 enabled = project.enabled,
                 url = project.url,

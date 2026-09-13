@@ -45,12 +45,24 @@ class FeedbackController(
     @GetMapping("/")
     fun home(): String = "redirect:/feedbacks/new"
 
+    /**
+     * 의견 등록 폼. `?project=` 파라미터로 프로젝트를 미리 선택할 수 있다.
+     * 값은 프로젝트의 공개 코드다 — PK 는 외부에 노출하지 않으므로 받지 않는다.
+     * 없는 코드이거나 비활성 프로젝트면 선택하지 않은 상태로 둔다.
+     */
     @GetMapping("/feedbacks/new")
-    fun newForm(model: Model): String {
-        if (!model.containsAttribute("form")) {
-            model.addAttribute("form", FeedbackForm())
+    fun newForm(
+        @RequestParam(name = "project", required = false) project: String?,
+        model: Model,
+    ): String {
+        val projects = projectService.listEnabled()
+        val form = model.getAttribute("form") as? FeedbackForm ?: FeedbackForm().also { model.addAttribute("form", it) }
+        if (form.projectId.isBlank()) {
+            projectService.findEnabledByCode(project)?.let { form.projectId = it.id }
         }
-        model.addAttribute("projects", projectService.listEnabled())
+        model.addAttribute("projects", projects)
+        // 첫 화면부터 선택된 프로젝트명이 보이도록 서버에서 내려준다(선택 팝업 스크립트를 기다리지 않는다).
+        model.addAttribute("selectedProjectName", projects.firstOrNull { it.id == form.projectId }?.name)
         return "user/form"
     }
 

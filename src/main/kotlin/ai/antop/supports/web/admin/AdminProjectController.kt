@@ -41,6 +41,7 @@ class AdminProjectController(
                 mapOf(
                     "id" to it.id,
                     "name" to it.name,
+                    "code" to it.code,
                     "sortOrder" to it.sortOrder,
                     "enabled" to it.enabled,
                     "url" to (it.url ?: ""),
@@ -60,7 +61,7 @@ class AdminProjectController(
             val name = form.name.trim()
             require(name.isNotBlank()) { "프로젝트명을 입력하세요." }
             require(name.length <= MAX_NAME_LENGTH) { "프로젝트명은 최대 ${MAX_NAME_LENGTH}자까지 입력할 수 있습니다." }
-            projectService.create(name, form.enabled, form.sortOrder, form.url)
+            projectService.create(name, form.enabled, form.sortOrder, form.url, form.code)
         }.fold(
             onSuccess = { ResponseEntity.ok(okBody()) },
             onFailure = { ResponseEntity.badRequest().body(errorBody(it)) },
@@ -96,6 +97,7 @@ class AdminProjectController(
     ): Any =
         when (field) {
             "name" -> item.name
+            "code" -> item.code
             "sortOrder" -> item.sortOrder
             "url" -> item.url ?: ""
             else -> item.enabled

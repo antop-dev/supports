@@ -22,7 +22,7 @@
                 <div class="project-trigger-wrap" id="projectTriggerWrap">
                     <span class="material-symbols-outlined project-trigger-icon">search</span>
                     <input type="text" id="projectTrigger" class="project-trigger" readonly
-                           th:value="#{feedback.field.project.placeholder}">
+                           th:value="${selectedProjectName} ?: #{feedback.field.project.placeholder}">
                 </div>
                 <div class="error-text" data-error></div>
 
